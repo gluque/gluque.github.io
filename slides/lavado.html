@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<title>Lavado de activos</title>
+<meta name="author" content="(Guillermo Luque)"/>
+<link rel="stylesheet" href="./reveal.js-3.2.0/css/reveal.css"/>
+<link rel="stylesheet" href="./reveal.js-3.2.0/css/theme/night.css" id="theme"/>
+<link rel="stylesheet" href=""/>
+<!-- If the query includes 'print-pdf', include the PDF print sheet -->
+<script>
+    if( window.location.search.match( /print-pdf/gi ) ) {
+        var link = document.createElement( 'link' );
+        link.rel = 'stylesheet';
+        link.type = 'text/css';
+        link.href = './reveal.js-3.2.0/css/print/pdf.css';
+        document.getElementsByTagName( 'head' )[0].appendChild( link );
+    }
+</script>
+</head>
+<body>
+<div class="reveal">
+<div class="slides">
+<section id="sec-title-slide">
+<h1>Lavado de activos</h1>
+<h2>Guillermo Luque</h2>
+<h2><a href="mailto:@guillermo_luque">@guillermo_luque</a></h2>
+<h2></h2>
+</section>
+
+<section>
+<section id="slide-orgheadline1">
+<h2 id="orgheadline1"><span class="section-number-2">1</span> Mantra</h2>
+<ul>
+<li>The best way to predict the future is to invent it. Alan Kay</li>
+
+</ul>
+</section>
+</section>
+<section>
+<section id="slide-orgheadline2">
+<h2 id="orgheadline2"><span class="section-number-2">2</span> Que buscamos?</h2>
+<p>
+Básicamente algo como esto:
+<a href="http://1.daily-stock-forecast.appspot.com/symbol/CENTA">Daily Stockes</a>
+</p>
+
+</section>
+</section>
+<section>
+<section id="slide-orgheadline3">
+<h2 id="orgheadline3"><span class="section-number-2">3</span> Backend</h2>
+<ul>
+<li>Python (Anaconda Python 3.5)</li>
+<li><a href="http://tornado.readthedocs.org/en/stable/">Tornado</a> como framework</li>
+<li>Análisis de datos con <a href="http://pandas.pydata.org/pandas-docs/stable/10min.html">Pandas</a></li>
+<li><a href="https://www.chrisstucchio.com/blog/2013/hadoop_hatred.html">How 'big' is big data</a></li>
+<li><a href="https://www.sqlite.org/">SQLite</a></li>
+
+</ul>
+
+</section>
+</section>
+<section>
+<section id="slide-orgheadline4">
+<h2 id="orgheadline4"><span class="section-number-2">4</span> Tipologías</h2>
+<ul>
+<li>No, anomalías
+<ul>
+<li>Una anomalía es una consulta</li>
+
+</ul></li>
+<li>Cada anomalía tiene al menos dos vistas
+<ul>
+<li>Resultados (graficos)</li>
+<li>Parametrizacion</li>
+
+</ul></li>
+<li>El usuario ajusta parametros y ve resultados</li>
+
+</ul>
+
+</section>
+</section>
+<section>
+<section id="slide-orgheadline5">
+<h2 id="orgheadline5"><span class="section-number-2">5</span> Reglas</h2>
+<ul>
+<li>Editor de reglas -&gt; SQL</li>
+<li>Pandas puede operar a partir de resultados SQL</li>
+<li>Si la base de datos es local, se hace más eficiente el proceso
+<ul>
+<li>Utilizar SQLite (máximo 140 TB)</li>
+
+</ul></li>
+<li>O sea, no reglas (pero abiertos a la posibilidad que sí)</li>
+
+</ul>
+
+</section>
+</section>
+<section>
+<section id="slide-orgheadline6">
+<h2 id="orgheadline6"><span class="section-number-2">6</span> Frontend</h2>
+<ul>
+<li>HTML5 a través de <a href="https://www.polymer-project.org/1.0/">Polymer</a></li>
+<li>Gráficos interactivos usando <a href="http://d3js.org/">D3.js</a>
+<ul>
+<li>Programación Javascript para controles</li>
+
+</ul></li>
+
+</ul>
+
+</section>
+</section>
+<section>
+<section id="slide-orgheadline7">
+<h2 id="orgheadline7"><span class="section-number-2">7</span> Despliegue</h2>
+<ul>
+<li>Instalar <a href="https://www.continuum.io/why-anaconda">Anaconda Python 3.5</a></li>
+<li>Desplegar nuestra solución
+<ul>
+<li>No base de datos, es decir sí, pero local (un archivo)</li>
+
+</ul></li>
+
+</ul>
+
+</section>
+</section>
+<section>
+<section id="slide-orgheadline8">
+<h2 id="orgheadline8"><span class="section-number-2">8</span> Componentes</h2>
+<ul>
+<li>Alimentador
+<ul>
+<li>Conectarse a diferentes fuentes de datos</li>
+<li>Almacenar datos de análisis localmente (SQLite)</li>
+<li>Dos tipos de flujos de datos:
+<ul>
+<li>Ocasionales e.g. tablas de referencia</li>
+<li>Periódicos e.g. transacciones, actualizaciones en datos del cliente</li>
+
+</ul></li>
+
+</ul></li>
+<li>Analizadores
+<ul>
+<li>Implementar capas de presentación y lógica</li>
+
+</ul></li>
+
+</ul>
+</section>
+<section>
+<ul>
+<li>Presentador
+<ul>
+<li>Interface principal de la aplicación</li>
+
+</ul></li>
+<li>Administrador
+<ul>
+<li>Aplicación para rutinas de mantenimiento</li>
+
+</ul></li>
+<li>Reportes
+<ul>
+<li>Relacionados con bitácoras o informes prediseñados</li>
+
+</ul></li>
+
+</ul>
+
+</section>
+</section>
+<section>
+<section id="slide-orgheadline9">
+<h2 id="orgheadline9"><span class="section-number-2">9</span> Capacitación</h2>
+<ul>
+<li>Python: Pandas, Numpy</li>
+<li>D3.js</li>
+<li>Análisis estadístico básico</li>
+<li>Duración: <b><b>1 mes</b></b></li>
+
+</ul>
+
+</section>
+</section>
+<section>
+<section id="slide-orgheadline10">
+<h2 id="orgheadline10"><span class="section-number-2">10</span> Implementación</h2>
+<ul>
+<li>Por ciclos, en cada ciclo al menos 3 tipologías
+<ul>
+<li>Diseñar rutina macro (una macro anomalía)</li>
+<li>Mejoras relativas e.g. reportes adicionales</li>
+<li>Duración: <b><b>1 mes/ciclo</b></b></li>
+
+</ul></li>
+<li>Implementar alimentador inicial
+<ul>
+<li>Duración: <b><b>15 días</b></b></li>
+
+</ul></li>
+<li>Implementar presentador inicial
+<ul>
+<li>Duración: <b><b>15 días</b></b></li>
+
+</ul></li>
+
+</ul>
+</section>
+<section>
+<ul>
+<li>Implementar administrador inicial
+<ul>
+<li>Duración: <b><b>20 días</b></b></li>
+
+</ul></li>
+<li>Implementar reportes iniciales
+<ul>
+<li>Duración: <b><b>5 días/reporte</b></b></li>
+
+</ul></li>
+<li>Implementar analizador inicial
+<ul>
+<li>Duración: <b><b>1 mes</b></b></li>
+
+</ul></li>
+
+</ul>
+
+</section>
+</section>
+<section>
+<section id="slide-orgheadline11">
+<h2 id="orgheadline11"><span class="section-number-2">11</span> Scrum</h2>
+<ul>
+<li>Lo que bien empieza</li>
+<li>No siempre bien acaba, al menos no en un proyecto de software</li>
+<li>&#x2026; Salvo que utilicemos <b>Scrum</b></li>
+<li>Porqué?
+<ul>
+<li>Es difícil hacer un <b>correcto</b> seguimiento del progreso del proyecto</li>
+<li>Los atrasos afectan los costos del proyecto, más tiempo, más dinero</li>
+<li>Se diluye la expectativa positiva del cliente</li>
+
+</ul></li>
+
+</ul>
+
+</section>
+</section>
+<section>
+<section id="slide-orgheadline12">
+<h2 id="orgheadline12"><span class="section-number-2">12</span> Por qué Scrum?</h2>
+<ul>
+<li>El equipo conoce exactamente lo que está pasando</li>
+<li>Se pueden hacer ajustes oportunos al proyecto</li>
+<li>El cliente puede evaluar periódicamente una versión funcional</li>
+<li>Ud. obtiene:
+<ul>
+<li>Control sobre el progreso del proyecto</li>
+<li>Capacidad para anticipar atrasos</li>
+
+</ul></li>
+
+</ul>
+
+</section>
+</section>
+<section>
+<section id="slide-orgheadline19">
+<h2 id="orgheadline19"><span class="section-number-2">13</span> Cómo aplicar Scrum?</h2>
+<ul>
+<li>Crear un <b>Backlog</b></li>
+<li>Estimar y priorizar</li>
+<li>Sprint
+<ul>
+<li>Spring Planning Meeting</li>
+
+</ul></li>
+<li>Daily Scrum</li>
+<li>Spring Review Meeting</li>
+
+</ul>
+
+</section>
+<section id="slide-orgheadline13">
+<h3 id="orgheadline13"><span class="section-number-3">13.1</span> Backlog</h3>
+<ul>
+<li>Lista de <b>todas</b> las características que debe tener el producto
+<ul>
+<li>&#x2026;según el cliente</li>
+
+</ul></li>
+<li>El backlog es creado por el <b>Product Owner</b> quien representa al cliente</li>
+
+</ul>
+
+</section>
+<section id="slide-orgheadline14">
+<h3 id="orgheadline14"><span class="section-number-3">13.2</span> Estimar y priorizar</h3>
+<ul>
+<li>El <b>Product Owner</b> estima cuánto tiempo va tomar cada item de la lista
+<ul>
+<li>Hay diferentes formas de realizar esta estimación</li>
+
+</ul></li>
+<li>El <b>Product Owner</b> ordena los items de la lista según su prioridad
+<ul>
+<li>La priorización permite enfocarnos en lo que brinda valor al negocio</li>
+
+</ul></li>
+<li>Los items de mayor a menor prioridad formarán parte del <b>Release Backlog</b></li>
+
+</ul>
+
+</section>
+<section id="slide-orgheadline16">
+<h3 id="orgheadline16"><span class="section-number-3">13.3</span> Sprint</h3>
+<ul>
+<li>Un <b>sprint</b> es una unidad de desarrollo de entre 3 y 30 días</li>
+<li>Un proyecto tiene varios <b>sprints</b> generalmente</li>
+<li>Al comienzo de cada <b>sprint</b> hay una reunión llamada <b>Spring Planning</b></li>
+
+</ul>
+
+</section>
+<section id="slide-orgheadline15">
+<h4 id="orgheadline15"><span class="section-number-4">13.3.1</span> Spring Planning Meesting</h4>
+<ul>
+<li>El <b>Product Owner</b> y el equipo acuerdan lo que se va hacer en el <b>sprint</b></li>
+<li>Tiene dos partes
+<ul>
+<li>En la primera el <b>PO</b> decide que características se van a hacer</li>
+<li>En la segunda el equipo define cómo hacerlo</li>
+
+</ul></li>
+<li>Se crea un <b>sprint backlog</b> y se asignan tareas a cada miembro del equipo</li>
+
+</ul>
+
+</section>
+<section id="slide-orgheadline17">
+<h3 id="orgheadline17"><span class="section-number-3">13.4</span> Daily Scrum</h3>
+<ul>
+<li>15 minutos, 7 am</li>
+<li>Tres preguntas:
+<ul>
+<li>Qué has hecho desde la última reunión diaria?</li>
+<li>Qué tienes planeado hacer?</li>
+<li>Qué problemas crees puedan afectar tu cumplimiento?</li>
+
+</ul></li>
+
+</ul>
+
+</section>
+<section id="slide-orgheadline18">
+<h3 id="orgheadline18"><span class="section-number-3">13.5</span> Sprint Review Meeting</h3>
+<ul>
+<li>El equipo presenta al <b>PO</b> lo que se hizo en el <b>sprint</b></li>
+<li>El cliente recibe una versión funcional delproducto</li>
+<li>Se planea el siguiente <b>sprint</b></li>
+
+</ul>
+</section>
+</section>
+</div>
+</div>
+<script src="./reveal.js-3.2.0/lib/js/head.min.js"></script>
+<script src="./reveal.js-3.2.0/js/reveal.js"></script>
+
+<script>
+// Full list of configuration options available here:
+// https://github.com/hakimel/reveal.js#configuration
+Reveal.initialize({
+
+controls: true,
+progress: true,
+history: false,
+center: true,
+slideNumber: false,
+rollingLinks: false,
+keyboard: true,
+overview: true,
+
+theme: Reveal.getQueryHash().theme, // available themes are in /css/theme
+transition: Reveal.getQueryHash().transition || 'linear', // default/cube/page/concave/zoom/linear/fade/none
+transitionSpeed: 'default',
+multiplex: {
+    secret: '', // null if client
+    id: '', // id, obtained from socket.io server
+    url: '' // Location of socket.io server
+},
+
+// Optional libraries used to extend on reveal.js
+dependencies: [
+ { src: './reveal.js-3.2.0/lib/js/classList.js', condition: function() { return !document.body.classList; } },
+ { src: './reveal.js-3.2.0/plugin/markdown/marked.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+ { src: './reveal.js-3.2.0/plugin/markdown/markdown.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+ { src: './reveal.js-3.2.0/plugin/zoom-js/zoom.js', async: true, condition: function() { return !!document.body.classList; } },
+ { src: './reveal.js-3.2.0/plugin/notes/notes.js', async: true, condition: function() { return !!document.body.classList; } }]
+});
+</script>
+</body>
+</html>
