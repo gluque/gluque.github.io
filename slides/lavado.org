@@ -132,7 +132,7 @@
 *** Spring Planning Meesting
    - El *Product Owner* y el equipo acuerdan lo que se va hacer en el *sprint*
    - Tiene dos partes
-     - En la primera el *PO* decide que características se van a hacer
+     - En la primera el *PO* decide con el equipo que tareas se van a hacer
      - En la segunda el equipo define cómo hacerlo
    - Se crea un *sprint backlog* y se asignan tareas a cada miembro del equipo
 
@@ -145,5 +145,12 @@
 
 ** Sprint Review Meeting
    - El equipo presenta al *PO* lo que se hizo en el *sprint*
-   - El cliente recibe una versión funcional delproducto
+   - El cliente recibe una versión funcional del producto
+     - ...y el equipo es retroalimentado
+   - Si hay un retraso, se puede detectar el problema a resolver
    - Se planea el siguiente *sprint*
+
+* Conclusiones sobre Scrum
+   - *Scrum* permite :
+     - tener control sobre el desarrollo del proyecto
+     - asegurar que las tareas fluyan conforme a lo planeado
