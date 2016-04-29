@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<title>Web development with Django</title>
+<meta name="author" content="(Guillermo G. Luque y Guzmán Sáenz)"/>
+<style type="text/css">
+.underline { text-decoration: underline; }
+</style>
+<link rel="stylesheet" href="./reveal.js/css/reveal.css"/>
+<link rel="stylesheet" href="./reveal.js/css/theme/night.css" id="theme"/>
+
+<!-- If the query includes 'print-pdf', include the PDF print sheet -->
+<script>
+    if( window.location.search.match( /print-pdf/gi ) ) {
+        var link = document.createElement( 'link' );
+        link.rel = 'stylesheet';
+        link.type = 'text/css';
+        link.href = './reveal.js/css/print/pdf.css';
+        document.getElementsByTagName( 'head' )[0].appendChild( link );
+    }
+</script>
+</head>
+<body>
+<div class="reveal">
+<div class="slides">
+<section id="sec-title-slide">
+<h1>Web development with Django</h1>
+<h2>Guillermo G. Luque y Guzmán Sáenz</h2>
+<h2><a href="mailto:gg.luque10@uniandes.edu.co">gg.luque10@uniandes.edu.co</a></h2>
+<h2></h2>
+</section>
+
+<section>
+<section id="slide-orgheadline2">
+<h2 id="orgheadline2"><span class="section-number-2">1</span> What is Django?</h2>
+<div class="outline-text-2" id="text-1">
+</div></section>
+<section id="slide-orgheadline1">
+<h3 id="orgheadline1"><span class="section-number-3">1.1</span> It isn't neither a singer nor a free slave</h3>
+<ul>
+<li>Django is a framework to develop web applications in Python. Period.</li>
+
+</ul>
+</section>
+</section>
+<section>
+<section id="slide-orgheadline7">
+<h2 id="orgheadline7"><span class="section-number-2">2</span> Installation</h2>
+<div class="outline-text-2" id="text-2">
+</div></section>
+<section id="slide-orgheadline3">
+<h3 id="orgheadline3"><span class="section-number-3">2.1</span> MySQL</h3>
+<ul>
+<li>Install <a href="https://mariadb.org/">Maria DB</a> (a MySQL fork with steroids). During installation, you have to assign a root's password.</li>
+<li>From the command line, access to the MariaDB server: <code>mysql -u root -p</code></li>
+
+</ul>
+<div class="org-src-container">
+
+<pre  class="src src-sql"><span style="color: #4f97d7; font-weight: bold;">CREATE</span> DATABASE trydjango <span style="color: #ce537a; font-weight: bold;">CHARACTER</span> <span style="color: #4f97d7; font-weight: bold;">SET</span> utf8;
+</pre>
+</div>
+</section>
+<section id="slide-orgheadline4">
+<h3 id="orgheadline4"><span class="section-number-3">2.2</span> Python 3.5</h3>
+<ul>
+<li>I'd prefer to use Anaconda's bundle. So, download it from <a href="http://www.continuum.io/downloads">here</a> and follow the install instructions according to your OS.</li>
+
+</ul>
+</section>
+<section id="slide-orgheadline5">
+<h3 id="orgheadline5"><span class="section-number-3">2.3</span> Virtual Environment</h3>
+<ul>
+<li>Once Anaconda has been installed, create a new virtual environment.</li>
+<li>This is not mandatory, but it will allow you to have an isolated Python's local installation.</li>
+<li>Create environment: <code>conda create -n djangodev django</code></li>
+<li>Activate environment: <code>source activate djangodev</code></li>
+<li>Deactivate environment: introduce exit in your command line or close it</li>
+
+</ul>
+</section>
+<section id="slide-orgheadline6">
+<h3 id="orgheadline6"><span class="section-number-3">2.4</span> Additional Python's packages</h3>
+<ul>
+<li>MySQL (MariaDB) driver: <code>conda install -n djangodev pymysl</code></li>
+
+</ul>
+</section>
+</section>
+<section>
+<section id="slide-orgheadline14">
+<h2 id="orgheadline14"><span class="section-number-2">3</span> First steps</h2>
+<div class="outline-text-2" id="text-3">
+</div></section>
+<section id="slide-orgheadline8">
+<h3 id="orgheadline8"><span class="section-number-3">3.1</span> New project</h3>
+<ul>
+<li>Here we are going to create a typical blog application. Nothing astonishing but it will serve to understand the big picture.</li>
+<li>First, activate your environment</li>
+<li>Second, create your project: <code>django-admin startproject trydjango</code></li>
+<li>In Django, a project is a set of applications. One of these will be our blog, but we can also have an admin control panel for example.</li>
+<li>Remember: one project, many apps.</li>
+
+</ul>
+</section>
+<section id="slide-orgheadline9">
+<h3 id="orgheadline9"><span class="section-number-3">3.2</span> Database connection</h3>
+<ul>
+<li>Update your setting's file (<code>trydjango/settings.py</code>):</li>
+
+</ul>
+<div class="org-src-container">
+
+<pre  class="src src-python"><span style="color: #2aa1ae; background-color: #292e34;"># </span><span style="color: #2aa1ae; background-color: #292e34;">after *import os* put this:</span>
+<span style="color: #4f97d7; font-weight: bold;">import</span> pymysql
+pymysql.install_as_MySQLdb<span style="color: #4f97d7;">()</span>
+
+<span style="color: #2aa1ae; background-color: #292e34;"># </span><span style="color: #2aa1ae; background-color: #292e34;">... many lines of code here ...</span>
+
+<span style="color: #2aa1ae; background-color: #292e34;"># </span><span style="color: #2aa1ae; background-color: #292e34;">now update the default database connection info:</span>
+<span style="color: #7590db;">DATABASES</span> = <span style="color: #4f97d7;">{</span>
+    <span style="color: #2d9574;">'default'</span>: <span style="color: #bc6ec5;">{</span>
+        <span style="color: #2d9574;">'ENGINE'</span>: <span style="color: #2d9574;">'django.db.backends.mysql'</span>,
+        <span style="color: #2d9574;">'NAME'</span>: <span style="color: #2d9574;">'trydjango'</span>,
+        <span style="color: #2d9574;">'USER'</span>: <span style="color: #2d9574;">'root'</span>,
+        <span style="color: #2d9574;">'PASSWORD'</span>: <span style="color: #2d9574;">'your_password'</span>,
+        <span style="color: #2d9574;">'HOST'</span>: <span style="color: #2d9574;">'localhost'</span>,
+        <span style="color: #2d9574;">'PORT'</span>: <span style="color: #2d9574;">''</span>,
+    <span style="color: #bc6ec5;">}</span>
+<span style="color: #4f97d7;">}</span>
+</pre>
+</div>
+</section>
+<section id="slide-orgheadline10">
+<h3 id="orgheadline10"><span class="section-number-3">3.3</span> First migration</h3>
+<ul>
+<li>In Django lingua, a migration means to update your database schema with the changes made in the source code.</li>
+<li>By default, Django include some pre-built applications inside such as <code>admin</code>.</li>
+<li>From this application, you can manage the users of your website and create nice CRUD interfaces.</li>
+<li>In the command line, exec this: <code>python manage.py migrate</code></li>
+<li>Create a superuser: <code>python manage.py createsuperuser</code></li>
+<li>Now you can run your Django's web server (yeah, batteries included!): <code>python manage.py runserver</code></li>
+
+</ul>
+</section>
+<section id="slide-orgheadline11">
+<h3 id="orgheadline11"><span class="section-number-3">3.4</span> Creating the posts app</h3>
+<ul>
+<li>In the command line: <code>python manage.py startapp posts</code></li>
+<li>Django's apps follow a Model-View-Controller pattern.</li>
+<li>Open <code>posts/models.py</code> and define a model to host the posts user enters:</li>
+
+</ul>
+<div class="org-src-container">
+
+<pre  class="src src-python"><span style="color: #4f97d7; font-weight: bold;">class</span> <span style="color: #ce537a; font-weight: bold;">Post</span><span style="color: #4f97d7;">(</span>models.Model<span style="color: #4f97d7;">)</span>:
+    <span style="color: #7590db;">title</span> = models.CharField<span style="color: #4f97d7;">(</span>max_length=<span style="color: #a45bad;">120</span><span style="color: #4f97d7;">)</span>
+    <span style="color: #7590db;">content</span> = models.TextField<span style="color: #4f97d7;">()</span>
+    <span style="color: #7590db;">updated</span> = models.DateTimeField<span style="color: #4f97d7;">(</span>auto_now=<span style="color: #a45bad;">True</span>, auto_now_add=<span style="color: #a45bad;">False</span><span style="color: #4f97d7;">)</span>
+    <span style="color: #7590db;">timestamp</span> = models.DateTimeField<span style="color: #4f97d7;">(</span>auto_now=<span style="color: #a45bad;">False</span>, auto_now_add=<span style="color: #a45bad;">True</span><span style="color: #4f97d7;">)</span>
+
+    <span style="color: #4f97d7; font-weight: bold;">def</span> <span style="color: #bc6ec5; font-weight: bold;">__str__</span><span style="color: #4f97d7;">(</span><span style="color: #4f97d7; font-weight: bold;">self</span><span style="color: #4f97d7;">)</span>:
+        <span style="color: #4f97d7; font-weight: bold;">return</span> <span style="color: #4f97d7; font-weight: bold;">self</span>.title
+</pre>
+</div>
+</section>
+<section>
+<ul>
+<li>You need to add the application to the project, so edit the list of <code>INSTALLED_APPS</code> in the <code>trydjango/settings.py</code> file:</li>
+
+</ul>
+<div class="org-src-container">
+
+<pre  class="src src-python"><span style="color: #7590db;">INSTALLED_APPS</span> = <span style="color: #4f97d7;">[</span>
+    <span style="color: #2d9574;">'django.contrib.admin'</span>,
+    <span style="color: #2d9574;">'django.contrib.auth'</span>,
+    <span style="color: #2d9574;">'django.contrib.contenttypes'</span>,
+    <span style="color: #2d9574;">'django.contrib.sessions'</span>,
+    <span style="color: #2d9574;">'django.contrib.messages'</span>,
+    <span style="color: #2d9574;">'django.contrib.staticfiles'</span>,
+    <span style="color: #2d9574;">'posts'</span>
+<span style="color: #4f97d7;">]</span>
+</pre>
+</div>
+</section>
+<section id="slide-orgheadline12">
+<h3 id="orgheadline12"><span class="section-number-3">3.5</span> Update the database</h3>
+<ul>
+<li>Each time a new model is added or changed, you have to:</li>
+<li>create the migration files: <code>python manage.py makemigrations</code></li>
+<li>and update the database's scheme: <code>python manage.py migrate</code></li>
+
+</ul>
+</section>
+<section id="slide-orgheadline13">
+<h3 id="orgheadline13"><span class="section-number-3">3.6</span> Model in control panel</h3>
+<ul>
+<li>The previous model has 4 fields, which were declared using 3 distinct model field references. Django has a lot of them, just check at: <a href="https://docs.djangoproject.com/en/1.9/ref/models/fields">Model Fields</a></li>
+<li>The <code>admin</code> application works like a control or admin panel for your website. For now you can add new users or groups, but you can also put them the models you define.</li>
+<li>All the objects in the <code>admin</code> application inherited their functionality from the <code>admin.ModelAdmin</code> class and are linked to either a built-in or a handcrafted model. See at <a href="https://docs.djangoproject.com/en/1.9/ref/contrib/admin/#modeladmin-objects">ModelAdmin Objects</a>.</li>
+
+</ul>
+</section>
+<section>
+<ul>
+<li>We have to declare a new <code>ModelAdmin</code> class and connect it to our posts model, so we can customize how the model is presented to the user.</li>
+<li>Modify <code>posts/admin.py</code> to register your model in the admin panel:</li>
+
+</ul>
+<div class="org-src-container">
+
+<pre  class="src src-python"><span style="color: #4f97d7; font-weight: bold;">from</span> .models <span style="color: #4f97d7; font-weight: bold;">import</span> Post
+
+<span style="color: #4f97d7; font-weight: bold;">class</span> <span style="color: #ce537a; font-weight: bold;">PostsModelAdmin</span><span style="color: #4f97d7;">(</span>admin.ModelAdmin<span style="color: #4f97d7;">)</span>:
+    <span style="color: #7590db;">list_display</span> = <span style="color: #4f97d7;">[</span><span style="color: #2d9574;">"__str__"</span>, <span style="color: #2d9574;">"updated"</span>, <span style="color: #2d9574;">"timestamp"</span><span style="color: #4f97d7;">]</span>
+    <span style="color: #7590db;">list_display_links</span> = <span style="color: #4f97d7;">[</span><span style="color: #2d9574;">"updated"</span><span style="color: #4f97d7;">]</span>
+    <span style="color: #7590db;">list_filter</span> = <span style="color: #4f97d7;">[</span><span style="color: #2d9574;">"updated"</span>, <span style="color: #2d9574;">"timestamp"</span><span style="color: #4f97d7;">]</span>
+    <span style="color: #7590db;">search_fields</span> = <span style="color: #4f97d7;">[</span><span style="color: #2d9574;">"title"</span>, <span style="color: #2d9574;">"content"</span><span style="color: #4f97d7;">]</span>
+    <span style="color: #7590db;">list_editable</span> = <span style="color: #4f97d7;">[</span><span style="color: #2d9574;">"title"</span><span style="color: #4f97d7;">]</span>
+    <span style="color: #4f97d7; font-weight: bold;">class</span> <span style="color: #ce537a; font-weight: bold;">Meta</span>:
+        <span style="color: #7590db;">model</span> = Post
+
+
+admin.site.register<span style="color: #4f97d7;">(</span>Post, PostsModelAdmin<span style="color: #4f97d7;">)</span>
+</pre>
+</div>
+</section>
+</section>
+<section>
+<section id="slide-orgheadline19">
+<h2 id="orgheadline19"><span class="section-number-2">4</span> Views and navigation in Django apps</h2>
+<div class="outline-text-2" id="text-4">
+</div></section>
+<section id="slide-orgheadline15">
+<h3 id="orgheadline15"><span class="section-number-3">4.1</span> CRUD</h3>
+<ul>
+<li>C = Create = POST -&gt; Create views (a new post)</li>
+<li>R = Retrieve data = GET -&gt; List views</li>
+<li>U = Update = PUT/PATCH -&gt; Update views (locating an existing post)</li>
+<li>D = Delete = DELETE -&gt; Delete views (with confirmation)</li>
+<li>You are always in an REQUEST-RESPONSE cycle when surfing on the web.</li>
+<li>What if we want to make our own pages to modify/view posts?, I mean, instead of have to use the <code>admin</code> application.</li>
+
+</ul>
+</section>
+<section id="slide-orgheadline16">
+<h3 id="orgheadline16"><span class="section-number-3">4.2</span> Introducing function based views</h3>
+<ul>
+<li>Let's create a simple view to list the posts we have in the database.</li>
+<li>This is the simplest way to create views in Django. They're just functions.</li>
+<li>Edit the <code>posts/views.py</code> file:</li>
+
+</ul>
+<div class="org-src-container">
+
+<pre  class="src src-python"><span style="color: #4f97d7; font-weight: bold;">from</span> django.shortcuts <span style="color: #4f97d7; font-weight: bold;">import</span> render
+<span style="color: #4f97d7; font-weight: bold;">from</span> django.http <span style="color: #4f97d7; font-weight: bold;">import</span> HttpResponse
+
+<span style="color: #2aa1ae; background-color: #292e34;"># </span><span style="color: #2aa1ae; background-color: #292e34;">Create your views here.</span>
+
+<span style="color: #4f97d7; font-weight: bold;">def</span> <span style="color: #bc6ec5; font-weight: bold;">posts_home</span><span style="color: #4f97d7;">(</span>render<span style="color: #4f97d7;">)</span>:
+    <span style="color: #4f97d7; font-weight: bold;">return</span> HttpResponse<span style="color: #4f97d7;">(</span><span style="color: #2d9574;">"&lt;h1&gt;Hello&lt;/h1"</span><span style="color: #4f97d7;">)</span>
+</pre>
+</div>
+</section>
+<section id="slide-orgheadline17">
+<h3 id="orgheadline17"><span class="section-number-3">4.3</span> URLs (I)</h3>
+<ul>
+<li>Once we have a simple view (or a complex one, later), we should create an URL pattern so we can send the request to the function and wait for its response.</li>
+<li>Django URL patterns are a mapping of regular expressions to view functions or classes. Please see <a href="https://github.com/codingforentrepreneurs/Guides/blob/master/all/common_url_regex.md">this link</a> for more examples.</li>
+<li>Add a new URL pattern to the <code>trydjango/urls.py</code> file:</li>
+
+</ul>
+<div class="org-src-container">
+
+<pre  class="src src-python"><span style="color: #4f97d7; font-weight: bold;">from</span> django.conf.urls <span style="color: #4f97d7; font-weight: bold;">import</span> url
+<span style="color: #4f97d7; font-weight: bold;">from</span> django.contrib <span style="color: #4f97d7; font-weight: bold;">import</span> admin
+
+<span style="color: #7590db;">urlpatterns</span> = <span style="color: #4f97d7;">[</span>
+    url<span style="color: #bc6ec5;">(</span>r<span style="color: #2d9574;">'^admin/'</span>, admin.site.urls<span style="color: #bc6ec5;">)</span>,
+    url<span style="color: #bc6ec5;">(</span>r<span style="color: #2d9574;">'^posts/$'</span>, <span style="color: #2d9574;">"posts.views.posts_home"</span><span style="color: #bc6ec5;">)</span>
+    <span style="color: #2aa1ae; background-color: #292e34;"># </span><span style="color: #2aa1ae; background-color: #292e34;">url(r'^posts/$', "&lt;app_name&gt;.views.&lt;function_name&gt;")</span>
+<span style="color: #4f97d7;">]</span>
+</pre>
+</div>
+</section>
+<section id="slide-orgheadline18">
+<h3 id="orgheadline18"><span class="section-number-3">4.4</span> URLs (II)</h3>
+<ul>
+<li>Nevertheless there is a better way to manage the applications's URL mappings to navigate through it.</li>
+<li>Firstly, create <i>fake</i> view functions for each of the CRUD operations in the <code>posts/views.py</code> file:</li>
+
+</ul>
+<div class="org-src-container">
+
+<pre  class="src src-python"><span style="color: #4f97d7; font-weight: bold;">from</span> django.shortcuts <span style="color: #4f97d7; font-weight: bold;">import</span> render
+<span style="color: #4f97d7; font-weight: bold;">from</span> django.http <span style="color: #4f97d7; font-weight: bold;">import</span> HttpResponse
+
+<span style="color: #2aa1ae; background-color: #292e34;"># </span><span style="color: #2aa1ae; background-color: #292e34;">Create your views here.</span>
+
+<span style="color: #4f97d7; font-weight: bold;">def</span> <span style="color: #bc6ec5; font-weight: bold;">post_list</span><span style="color: #4f97d7;">(</span>request<span style="color: #4f97d7;">)</span>:
+    <span style="color: #4f97d7; font-weight: bold;">return</span> HttpResponse<span style="color: #4f97d7;">(</span><span style="color: #2d9574;">"&lt;h1&gt;List&lt;/h1"</span><span style="color: #4f97d7;">)</span>
+
+<span style="color: #4f97d7; font-weight: bold;">def</span> <span style="color: #bc6ec5; font-weight: bold;">post_create</span><span style="color: #4f97d7;">(</span>request<span style="color: #4f97d7;">)</span>:
+    <span style="color: #4f97d7; font-weight: bold;">return</span> HttpResponse<span style="color: #4f97d7;">(</span><span style="color: #2d9574;">"&lt;h1&gt;Create&lt;/h1"</span><span style="color: #4f97d7;">)</span>
+
+<span style="color: #4f97d7; font-weight: bold;">def</span> <span style="color: #bc6ec5; font-weight: bold;">post_detail</span><span style="color: #4f97d7;">(</span>request<span style="color: #4f97d7;">)</span>:
+    <span style="color: #4f97d7; font-weight: bold;">return</span> HttpResponse<span style="color: #4f97d7;">(</span><span style="color: #2d9574;">"&lt;h1&gt;Detail&lt;/h1"</span><span style="color: #4f97d7;">)</span>
+
+<span style="color: #4f97d7; font-weight: bold;">def</span> <span style="color: #bc6ec5; font-weight: bold;">post_update</span><span style="color: #4f97d7;">(</span>request<span style="color: #4f97d7;">)</span>:
+    <span style="color: #4f97d7; font-weight: bold;">return</span> HttpResponse<span style="color: #4f97d7;">(</span><span style="color: #2d9574;">"&lt;h1&gt;Update&lt;/h1"</span><span style="color: #4f97d7;">)</span>
+
+<span style="color: #4f97d7; font-weight: bold;">def</span> <span style="color: #bc6ec5; font-weight: bold;">post_delete</span><span style="color: #4f97d7;">(</span>request<span style="color: #4f97d7;">)</span>:
+    <span style="color: #4f97d7; font-weight: bold;">return</span> HttpResponse<span style="color: #4f97d7;">(</span><span style="color: #2d9574;">"&lt;h1&gt;Delete&lt;/h1"</span><span style="color: #4f97d7;">)</span>
+</pre>
+</div>
+</section>
+<section>
+<ul>
+<li>Next, create a new file called <code>posts/urls.py</code> and define mappings to each view:</li>
+
+</ul>
+<div class="org-src-container">
+
+<pre  class="src src-python"><span style="color: #4f97d7; font-weight: bold;">from</span> django.conf.urls <span style="color: #4f97d7; font-weight: bold;">import</span> url
+<span style="color: #4f97d7; font-weight: bold;">import</span> posts.views
+
+<span style="color: #7590db;">urlpatterns</span> = <span style="color: #4f97d7;">[</span>
+    url<span style="color: #bc6ec5;">(</span>r<span style="color: #2d9574;">'^$'</span>, posts.views.post_list<span style="color: #bc6ec5;">)</span>,
+    url<span style="color: #bc6ec5;">(</span>r<span style="color: #2d9574;">'^create/$'</span>, posts.views.post_create<span style="color: #bc6ec5;">)</span>,
+    url<span style="color: #bc6ec5;">(</span>r<span style="color: #2d9574;">'^detail/$'</span>, posts.views.post_detail<span style="color: #bc6ec5;">)</span>,
+    url<span style="color: #bc6ec5;">(</span>r<span style="color: #2d9574;">'^update/$'</span>, posts.views.post_update<span style="color: #bc6ec5;">)</span>,
+    url<span style="color: #bc6ec5;">(</span>r<span style="color: #2d9574;">'^delete/$'</span>, posts.views.post_delete<span style="color: #bc6ec5;">)</span>
+<span style="color: #4f97d7;">]</span>
+</pre>
+</div>
+</section>
+<section>
+<ul>
+<li>Finally, update the <code>trydjango/urls.py</code> file to include the already created file:</li>
+
+</ul>
+<div class="org-src-container">
+
+<pre  class="src src-python"><span style="color: #4f97d7; font-weight: bold;">from</span> django.conf.urls <span style="color: #4f97d7; font-weight: bold;">import</span> url, include
+<span style="color: #4f97d7; font-weight: bold;">from</span> django.contrib <span style="color: #4f97d7; font-weight: bold;">import</span> admin
+
+<span style="color: #7590db;">urlpatterns</span> = <span style="color: #4f97d7;">[</span>
+    url<span style="color: #bc6ec5;">(</span>r<span style="color: #2d9574;">'^admin/'</span>, admin.site.urls<span style="color: #bc6ec5;">)</span>,
+    url<span style="color: #bc6ec5;">(</span>r<span style="color: #2d9574;">'^posts/'</span>, include<span style="color: #2d9574;">(</span><span style="color: #2d9574;">"posts.urls"</span><span style="color: #2d9574;">)</span><span style="color: #bc6ec5;">)</span>
+    <span style="color: #2aa1ae; background-color: #292e34;"># </span><span style="color: #2aa1ae; background-color: #292e34;">url(r'^posts/$', "&lt;app_name&gt;.views.&lt;function_name&gt;")</span>
+<span style="color: #4f97d7;">]</span>
+</pre>
+</div>
+</section>
+</section>
+<section>
+<section id="slide-orgheadline23">
+<h2 id="orgheadline23"><span class="section-number-2">5</span> Templates</h2>
+<div class="outline-text-2" id="text-5">
+</div></section>
+<section id="slide-orgheadline20">
+<h3 id="orgheadline20"><span class="section-number-3">5.1</span> Base directory</h3>
+<ul>
+<li>In your <code>trydjango/settings.py</code> there is a veriable called <code>BASE_DIR</code>.</li>
+<li><code>BASE_DIR</code> refers to the base directory of your project, i.e. where <code>manage.py</code> file resides.</li>
+<li>Using the <code>os</code> Python's library, Django can know its relative path in spite of the subyacent operating system.</li>
+
+</ul>
+</section>
+<section id="slide-orgheadline21">
+<h3 id="orgheadline21"><span class="section-number-3">5.2</span> Setting templates</h3>
+<ul>
+<li>In your project directory create a new directory called <code>templates</code></li>
+<li>Edit your <code>trydjango/settings.py</code> file and set the location of your templates directory using <code>BASE_DIR</code>:</li>
+
+</ul>
+<div class="org-src-container">
+
+<pre  class="src src-python"><span style="color: #7590db;">TEMPLATES</span> = <span style="color: #4f97d7;">[</span>
+    <span style="color: #bc6ec5;">{</span>
+        <span style="color: #2d9574;">'BACKEND'</span>: <span style="color: #2d9574;">'django.template.backends.django.DjangoTemplates'</span>,
+        <span style="color: #2d9574;">'DIRS'</span>: <span style="color: #2d9574;">[</span>os.path.join<span style="color: #67b11d;">(</span>BASE_DIR, <span style="color: #2d9574;">"templates"</span><span style="color: #67b11d;">)</span><span style="color: #2d9574;">]</span>,
+        <span style="color: #2d9574;">'APP_DIRS'</span>: <span style="color: #a45bad;">True</span>,
+        <span style="color: #2d9574;">'OPTIONS'</span>: <span style="color: #2d9574;">{</span>
+            <span style="color: #2d9574;">'context_processors'</span>: <span style="color: #67b11d;">[</span>
+                <span style="color: #2d9574;">'django.template.context_processors.debug'</span>,
+                <span style="color: #2d9574;">'django.template.context_processors.request'</span>,
+                <span style="color: #2d9574;">'django.contrib.auth.context_processors.auth'</span>,
+                <span style="color: #2d9574;">'django.contrib.messages.context_processors.messages'</span>,
+            <span style="color: #67b11d;">]</span>,
+        <span style="color: #2d9574;">}</span>,
+    <span style="color: #bc6ec5;">}</span>,
+<span style="color: #4f97d7;">]</span>
+</pre>
+</div>
+</section>
+<section id="slide-orgheadline22">
+<h3 id="orgheadline22"><span class="section-number-3">5.3</span> Using templates</h3>
+<ul>
+<li>A view function can use the <code>render</code> function to take the request, looks for a template and passing a Python's dictionary in there.</li>
+<li>Templates are basically HTML files located at the <code>templates</code> folder.</li>
+<li>In a view, we refer to a template only by its filename. The directory where the file is stored, is located automatically by Django thanks to the settings adjustments we have done.</li>
+<li>Let's create a sample template <code>index.html</code> in the <code>templates</code> directory:</li>
+
+</ul>
+<div class="org-src-container">
+
+<pre  class="src src-html"><span style="color: #2aa1ae; background-color: #292e34;">&lt;!-- </span><span style="color: #2aa1ae; background-color: #292e34;">DOCTYPE html </span><span style="color: #2aa1ae; background-color: #292e34;">--&gt;</span>
+&lt;<span style="color: #bc6ec5; font-weight: bold;">html</span>&gt;
+    &lt;<span style="color: #bc6ec5; font-weight: bold;">body</span>&gt;
+        &lt;<span style="color: #bc6ec5; font-weight: bold;">h1</span>&gt;<span style="font-weight: bold; text-decoration: underline;">{{ title }}</span>&lt;/<span style="color: #bc6ec5; font-weight: bold;">h1</span>&gt;
+        &lt;<span style="color: #bc6ec5; font-weight: bold;">ul</span>&gt;{% for obj in object_list %}
+            &lt;<span style="color: #bc6ec5; font-weight: bold;">li</span>&gt;{{ obj.title }}&lt;/<span style="color: #bc6ec5; font-weight: bold;">li</span>&gt;
+            {% endfor %}
+        &lt;/<span style="color: #bc6ec5; font-weight: bold;">ul</span>&gt;
+    &lt;/<span style="color: #bc6ec5; font-weight: bold;">body</span>&gt;
+&lt;/<span style="color: #bc6ec5; font-weight: bold;">html</span>&gt;
+</pre>
+</div>
+</section>
+<section>
+<ul>
+<li>Now we can modify the post list view in the <code>posts/views.py</code> file:</li>
+
+</ul>
+<div class="org-src-container">
+
+<pre  class="src src-python"><span style="color: #4f97d7; font-weight: bold;">from</span> django.shortcuts <span style="color: #4f97d7; font-weight: bold;">import</span> render
+<span style="color: #4f97d7; font-weight: bold;">from</span> django.http <span style="color: #4f97d7; font-weight: bold;">import</span> HttpResponse
+<span style="color: #4f97d7; font-weight: bold;">from</span> posts.models <span style="color: #4f97d7; font-weight: bold;">import</span> Post
+
+<span style="color: #2aa1ae; background-color: #292e34;"># </span><span style="color: #2aa1ae; background-color: #292e34;">Create your views here.</span>
+
+<span style="color: #4f97d7; font-weight: bold;">def</span> <span style="color: #bc6ec5; font-weight: bold;">post_list</span><span style="color: #4f97d7;">(</span>render<span style="color: #4f97d7;">)</span>:
+    <span style="color: #7590db;">queryset</span> = Posts.objects.<span style="color: #4f97d7;">all</span><span style="color: #4f97d7;">()</span>
+    <span style="color: #7590db;">context</span> = <span style="color: #4f97d7;">{</span>
+        <span style="color: #2d9574;">'title'</span>: <span style="color: #2d9574;">'Posts List'</span>,
+        <span style="color: #2d9574;">'object_list'</span>: queryset
+    <span style="color: #4f97d7;">}</span>
+    <span style="color: #4f97d7; font-weight: bold;">return</span> render<span style="color: #4f97d7;">(</span>request, <span style="color: #2d9574;">'index.html'</span>, context<span style="color: #4f97d7;">)</span>
+
+<span style="color: #2aa1ae; background-color: #292e34;"># </span><span style="color: #2aa1ae; background-color: #292e34;">... more lines here ...</span>
+</pre>
+</div>
+</section>
+</section>
+</div>
+</div>
+<script src="./reveal.js/lib/js/head.min.js"></script>
+<script src="./reveal.js/js/reveal.js"></script>
+
+<script>
+// Full list of configuration options available here:
+// https://github.com/hakimel/reveal.js#configuration
+Reveal.initialize({
+
+controls: true,
+progress: true,
+history: false,
+center: true,
+slideNumber: 'c',
+rollingLinks: false,
+keyboard: true,
+overview: true,
+
+theme: Reveal.getQueryHash().theme, // available themes are in /css/theme
+transition: Reveal.getQueryHash().transition || 'linear', // default/cube/page/concave/zoom/linear/fade/none
+transitionSpeed: 'default',
+multiplex: {
+    secret: '', // null if client
+    id: '', // id, obtained from socket.io server
+    url: '' // Location of socket.io server
+},
+
+// Optional libraries used to extend on reveal.js
+dependencies: [
+ { src: './reveal.js/lib/js/classList.js', condition: function() { return !document.body.classList; } },
+ { src: './reveal.js/plugin/markdown/marked.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+ { src: './reveal.js/plugin/markdown/markdown.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+ { src: './reveal.js/plugin/zoom-js/zoom.js', async: true, condition: function() { return !!document.body.classList; } },
+ { src: './reveal.js/plugin/notes/notes.js', async: true, condition: function() { return !!document.body.classList; } }]
+});
+</script>
+</body>
+</html>
