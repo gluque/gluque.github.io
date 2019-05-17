@@ -3,12 +3,24 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   
   <url>
-    <loc>http://gluque.github.io/categories/</loc>
+    <loc>http://gluque.github.io/</loc>
+    <lastmod>2019-05-17T21:53:17+02:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
-    <loc>http://gluque.github.io/</loc>
+    <loc>http://gluque.github.io/posts/</loc>
+    <lastmod>2019-05-17T21:53:17+02:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>http://gluque.github.io/posts/rails-5.2-aws/</loc>
+    <lastmod>2019-05-17T21:53:17+02:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>http://gluque.github.io/categories/</loc>
     <priority>0</priority>
   </url>
   

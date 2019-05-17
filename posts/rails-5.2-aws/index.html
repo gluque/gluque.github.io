@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    
+    <title>Rails 5.2.3 on AWS - Guillermo G. Luque</title>
+    
+    <meta name="description" content="Prerrequisites  Create an EC2 instance (Ubuntu 16.04) Install MySQL or provision a Postgres database on AWS RDS  Configure Capistrano Add the following gems to your Gemfile:
+gem &#39;capistrano&#39;, group: :development gem &#39;capistrano-bundler&#39;, group: :development gem &#39;capistrano-passenger&#39;, group: :development gem &#39;capistrano-rails&#39;, group: :development gem &#39;capistrano-rvm&#39;, group: :development  Install the gems and Capistrano:
+bundle install bundle exec cap install  Capistrano create a number of files when installed. The single entry point for Capistrano is Capfile which contains the instructions that Capistrano will execute to perform the deployment.">
+    <meta name="author" content="">
+    
+    <link href="http://gluque.github.io/css/github-gist.min.css" rel="stylesheet">
+    <link href="http://gluque.github.io/css/style.css" rel="stylesheet">
+    
+    <link rel="apple-touch-icon" href="http://gluque.github.io/img/apple-touch-icon.png">
+    <link rel="icon" href="http://gluque.github.io/img/favicon.ico">
+    
+    <meta name="generator" content="Hugo 0.55.5" />
+    
+    <link rel="alternate" type="application/atom+xml" href="http://gluque.github.io/index.xml" title="Guillermo G. Luque">
+    
+    
+  </head>
+  <body class="single">
+    <header class="header">
+      <div class="wrap">
+        
+        <p class="logo"><a href="http://gluque.github.io/">Guillermo G. Luque </a></p>
+        
+        <button class="menu-toggle" type="button"></button>
+      </div>
+    </header>
+    <nav class="nav">
+    <ul class="menu">
+      
+      
+    </ul>
+    </nav>
+    <main class="main">
+
+
+<article class="post-single">
+  <header class="post-header">
+    <h1 class="post-title">Rails 5.2.3 on AWS</h1>
+    <div class="post-meta">2019.5.17</div>
+  </header>
+  <div class="post-content">
+
+<h2 id="prerrequisites">Prerrequisites</h2>
+
+<ul>
+<li>Create an EC2 instance (Ubuntu 16.04)</li>
+<li>Install MySQL or provision a Postgres database on AWS RDS</li>
+</ul>
+
+<h2 id="configure-capistrano">Configure Capistrano</h2>
+
+<p>Add the following gems to your <code>Gemfile</code>:</p>
+
+<pre><code>gem 'capistrano', group: :development
+gem 'capistrano-bundler', group: :development
+gem 'capistrano-passenger', group: :development
+gem 'capistrano-rails', group: :development
+gem 'capistrano-rvm', group: :development
+</code></pre>
+
+<p>Install the gems and Capistrano:</p>
+
+<pre><code>bundle install
+bundle exec cap install
+</code></pre>
+
+<p>Capistrano create a number of files when installed. The single entry point for Capistrano is <code>Capfile</code> which contains the instructions that Capistrano will execute to perform the deployment. The following options should be enabled:</p>
+
+<pre><code>require &quot;capistrano/setup&quot;
+require &quot;capistrano/deploy&quot;
+require &quot;capistrano/scm/git&quot;
+install_plugin Capistrano::SCM::Git
+
+require &quot;capistrano/rvm&quot;
+require &quot;capistrano/bundler&quot;
+require &quot;capistrano/rails/assets&quot;
+require &quot;capistrano/rails/migrations&quot;
+require &quot;capistrano/passenger&quot;
+
+Dir.glob(&quot;lib/capistrano/tasks/*.rake&quot;).each { |r| import r }
+</code></pre>
+
+<p>Configure the <code>config/deploy.rb</code> file, which defines variables that Capistrano will use:</p>
+
+<pre><code>set :application, &quot;&lt;appname&gt;&quot;
+set :repo_url, &quot;git@bitbucket.org:&lt;username&gt;/&lt;appname&gt;.git&quot;
+set :deploy_to, &quot;/home/ubuntu/&lt;appname&gt;&quot;
+set :passenger_restart_with_touch, true
+set :linked_files, %w{config/master.key}
+</code></pre>
+
+<p>Configure the <code>config/deploy/production.rb</code> file to set the connection to the EC2 instance:</p>
+
+<pre><code>role :app, %w{ubuntu@&lt;ip_instance&gt;}
+role :web, %w{ubuntu@&lt;ip_instance&gt;}
+role :db,  %w{ubuntu@&lt;ip_instance&gt;}
+set :ssh_options, {
+    keys: %w(&lt;full_path_aws_pem&gt;),
+    forward_agent: false,
+    auth_methods: %w(publickey password)
+}
+</code></pre>
+
+<h2 id="configure-the-database">Configure the database</h2>
+
+<p>Edit the production section of the <code>config/database.yml</code> file to set the database credentials:</p>
+
+<pre><code>production:
+  adapter: mysql2
+  encoding: utf8
+  reconnect: false
+  database: &lt;database_production&gt;
+  pool: &lt;%= ENV.fetch(&quot;RAILS_MAX_THREADS&quot;) { 5 } %&gt;
+  username: &lt;database_user&gt;
+  password: &lt;database_password&gt;
+</code></pre>
+
+<p>If you are using AWS RDS, after setting the database credentials you can run a migration:</p>
+
+<pre><code>RAILS_ENV=production rails db:create
+</code></pre>
+
+<p>Otherwise, create the production database on the instance.</p>
+
+<h2 id="configure-the-ec2-instance">Configure the EC2 Instance</h2>
+
+<p>Open an SSH connection to your instance, and install the following packages:</p>
+
+<pre><code>curl -sL https://deb.nodesource.com/setup_8.x | sudo -E bash -
+curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | sudo apt-key add -
+echo &quot;deb https://dl.yarnpkg.com/debian/ stable main&quot; | sudo tee /etc/apt/sources.list.d/yarn.list
+sudo apt-get update
+sudo apt-get install git-core curl zlib1g-dev build-essential libssl-dev libreadline-dev libyaml-dev libsqlite3-dev sqlite3 libxml2-dev libxslt1-dev libcurl4-openssl-dev software-properties-common libffi-dev nodejs yarn
+</code></pre>
+
+<h3 id="install-rvm">Install RVM</h3>
+
+<p>Run the following commands to install RVM:</p>
+
+<pre><code>sudo gpg --keyserver hkp://keys.gnupg.net --recv-keys 409B6B1796C275462A1703113804BB82D39DC0E3
+curl -sSL https://get.rvm.io | sudo bash -s stable
+sudo usermod -a -G rvm `whoami`
+if sudo grep -q secure_path /etc/sudoers; then sudo sh -c “echo export rvmsudo_secure_path=1 &gt;&gt; /etc/profile.d/rvm_secure_path.sh” &amp;&amp; echo Environment variable installed; fi
+</code></pre>
+
+<p>Close and reopen the SSH connection. Next, install Ruby 2.4.1, followed by bundler and rails 5.2.3:</p>
+
+<pre><code>rvm install ruby-2.4.1
+rvm --default use ruby-2.4.1
+gem install bundler -no-rdoc --no-ri
+gem install rails -v 5.2.3
+</code></pre>
+
+<h3 id="install-passenger-and-nginx">Install Passenger and Nginx</h3>
+
+<p>Next, run the following commands to install both Passenger and Nginx:</p>
+
+<pre><code>sudo apt-get install -y dirmngr gnupg
+sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 561F9B9CAC40B2F7
+sudo apt-get install -y apt-transport-https ca-certificates
+
+sudo sh -c 'echo deb https://oss-binaries.phusionpassenger.com/apt/passenger xenial main &gt; /etc/apt/sources.list.d/passenger.list'
+sudo apt-get update
+sudo apt-get install nginx-extras passenger
+</code></pre>
+
+<p>Edit the <code>/etc/nginx/nginx.conf</code> file and uncomment the following line:</p>
+
+<pre><code>include /etc/nginx/passenger.conf;
+</code></pre>
+
+<p>Next, run the following command and copy the full path to the Ruby interpreter used by Passenger.</p>
+
+<pre><code>passenger-config about ruby-command
+</code></pre>
+
+<p>Edit the <code>/etc/nginx/passenger.conf</code> file and include a line with the path to the Ruby program given by the former command:</p>
+
+<pre><code>passenger_ruby /usr/local/rvm/gems/ruby-2.4.1/wrappers/ruby;
+</code></pre>
+
+<p>Next, edit the <code>/etc/nginx/sites-available/default</code> file and add a new virtual host. Later, link the server name to the instance in the AWS Route 53 service.</p>
+
+<pre><code>server {
+        listen 80;
+        server_name my.&lt;appname&gt;.com;
+        root /home/ubuntu/&lt;appname&gt;/current/public;
+        passenger_enabled on;
+}
+</code></pre>
+
+<p>Restart Nginx:</p>
+
+<pre><code>sudo service nginx restart
+</code></pre>
+
+<h3 id="set-up-bitbucket-credentials">Set up Bitbucket credentials</h3>
+
+<p>Run the following commands using the email from your Bitbucket account.</p>
+
+<pre><code>ssh-keygen -t rsa -C &quot;&lt;bibucket_email&gt;&quot;
+eval &quot;$(ssh-agent -s)&quot;
+ssh-add ~/.ssh/id_rsa
+cat ~/.ssh/id_rsa.pub
+</code></pre>
+
+<p>Copy the output of the last command into the Bitbucket authorized SSH keys.</p>
+
+<h2 id="deploy-the-app-using-capistrano">Deploy the app using Capistrano</h2>
+
+<p>Start the deployment from your local machine with this command:</p>
+
+<pre><code>bundle exec cap production deploy
+</code></pre>
+
+<p>The first time you deploy, it will stop asking for the <code>config/master.key</code> file. Then, copy that file to your instance using this command:</p>
+
+<pre><code>scp -i &lt;aws_pem&gt; config/master.key ubuntu@&lt;ip_instance&gt;:/home/ubuntu/&lt;appname&gt;/shared/config/
+</code></pre>
+
+<p>Finally, deploy your application again.</p>
+</div>
+  <footer class="post-footer">
+    
+  </footer>
+  
+  
+  
+  
+</article>
+
+</main>
+<footer class="footer">
+  <span>&copy; 2019 Guillermo G. Luque</span>
+  <span>&middot;</span>
+  <span>Powered by <a href="https://gohugo.io/" rel="noopener" target="_blank">Hugo️️</a>️</span>
+  <span>&middot;</span>
+  <span>Theme️ <a href="https://github.com/nanxiaobei/hugo-paper" rel="noopener" target="_blank">Paper</a></span>
+</footer>
+<script src="http://gluque.github.io/js/instantclick.min.js" data-no-instant></script>
+<script data-no-instant>InstantClick.init();</script>
+<script src="http://gluque.github.io/js/highlight.min.js" data-no-instant></script>
+<script data-no-instant>
+  hljs.initHighlightingOnLoad();
+  setMenuListener();
+
+  InstantClick.on('change', function() {
+    document.querySelectorAll('pre code').forEach((block) => {
+      hljs.highlightBlock(block);
+    });
+    setMenuListener();
+  });
+
+  function setMenuListener() {
+    var menuToggle = document.querySelector('.menu-toggle');
+    var body = document.querySelector('body');
+    menuToggle.addEventListener('click', function() {
+      body.classList.toggle('no-scroll');
+    }, false);
+  }
+</script>
+</body>
+</html>
+
